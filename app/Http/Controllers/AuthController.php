@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
@@ -37,6 +37,32 @@ class AuthController extends Controller
             return response()->json([
                 'status_code' => 500,
                 'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function me()
+    {
+        try {
+            $user = Auth::guard('api')->user();
+
+            $formatedUser = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role->name,
+            ];
+
+            return response()->json([
+                'message' => 'User ditemukan',
+                'status_code' => 200,
+                'data' => $formatedUser
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'status_code' => 500,
+                'data' => null
             ], 500);
         }
     }
